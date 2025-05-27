@@ -1,0 +1,22 @@
+{
+  "name": "sp_main_22_05_2025",
+  "version": "1.0.0",
+  "main": "block.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "pretty": "^2.0.0"
+  },
+  "devDependencies": {
+    "compression": "^1.8.0",
+    "http": "^0.0.1-security",
+    "http-server": "^14.1.1",
+    "prettier": "3.5.3",
+    "serve-static": "^2.2.0"
+  }
+}

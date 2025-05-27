@@ -26179,6 +26179,81 @@ ${getTextUserAnswers()}
 
       <div class="lazy-component" data-src="./block.js"></div>
 
+      <script>
+          async function loadHTMLSequentially(url, containerId) {
+              try {
+                  const response = await fetch(url);
+                  const html = await response.text();
+
+                  const container = document.querySelector(containerId);
+                  const footer = container.querySelector('footer');
+
+                  const parser = new DOMParser();
+                  const doc = parser.parseFromString(html, 'text/html');
+
+                  // Собираем все элементы и скрипты отдельно
+                  const elements = [];
+                  const scripts = [];
+
+                  Array.from(doc.body.children).forEach(element => {
+                      if (element.tagName === 'SCRIPT') {
+                          scripts.push(element);
+                      } else {
+                          elements.push(element);
+                          // Также собираем вложенные скрипты
+                          element.querySelectorAll('script').forEach(script => {
+                              scripts.push(script);
+                          });
+                      }
+                  });
+
+                  // Сначала вставляем HTML без скриптов
+                  elements.forEach(element => {
+                      const clone = element.cloneNode(true);
+                      // Удаляем скрипты из клона
+                      clone.querySelectorAll('script').forEach(s => s.remove());
+
+                      if (footer) {
+                          container.insertBefore(clone, footer);
+                      } else {
+                          container.appendChild(clone);
+                      }
+                  });
+
+                  // Затем последовательно выполняем скрипты
+                  for (const script of scripts) {
+                      await new Promise((resolve) => {
+                          const newScript = document.createElement('script');
+
+                          Array.from(script.attributes).forEach(attr => {
+                              newScript.setAttribute(attr.name, attr.value);
+                          });
+
+                          if (script.src) {
+                              newScript.onload = resolve;
+                              newScript.onerror = resolve;
+                          } else {
+                              newScript.textContent = script.textContent;
+                              setTimeout(resolve, 0);
+                          }
+
+                          if (footer) {
+                              container.insertBefore(newScript, footer);
+                          } else {
+                              container.appendChild(newScript);
+                          }
+                      });
+                  }
+
+              } catch (error) {
+                  console.error('Ошибка:', error);
+              }
+          }
+
+          // Использование
+          loadHTMLSequentially('/page2.html', '#allrecords');
+      </script>
+
       <!--footer-->
       <footer id="t-footer" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="3944905" data-tilda-page-id="27796969" data-tilda-formskey="a39f99b6dbd53a6ef2ef3d99f712e3f3" data-tilda-stat-scroll="yes" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes">
         <div id="rec770345463" class="r t-rec t-rec_pt_0 t-rec_pb_0" style="padding-top: 0px; padding-bottom: 0px" data-animationappear="off" data-record-type="396">
